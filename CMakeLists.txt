@@ -27,15 +27,33 @@ if (LV_USE_LINUX_DRM)
 
 elseif (LV_USE_SDL)
 
-    find_package(PkgConfig REQUIRED)
+     find_package(PkgConfig REQUIRED)
     pkg_check_modules(SDL2 REQUIRED sdl2)
     pkg_check_modules(SDL2_image REQUIRED SDL2_image)
 
+    # 添加 SDL2 和 SDL2_image 的头文件路径
     target_include_directories(lvgl PRIVATE ${SDL2_INCLUDE_DIRS})
     target_include_directories(lvgl PRIVATE ${SDL2_IMAGE_INCLUDE_DIRS})
-    add_executable(lvglsim main.c mouse_cursor_icon.c)
-    target_link_libraries(lvglsim lvgl lvgl::examples lvgl::demos lvgl::thorvg ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} m pthread)
 
+    # 添加示例目标文件
+    add_executable(lvglsim main.c mouse_cursor_icon.c)
+
+    # 链接库
+    target_link_libraries(lvglsim 
+        lvgl 
+        lvgl::examples 
+        lvgl::demos 
+        lvgl::thorvg 
+        ${SDL2_LIBRARIES} 
+        ${SDL2_IMAGE_LIBRARIES} 
+        m 
+        pthread
+    )
+
+    # 避免找不到 SDL2 库路径时的链接问题
+    target_link_directories(lvglsim PRIVATE ${SDL2_LIBRARY_DIRS})
+    target_link_directories(lvglsim PRIVATE ${SDL2_IMAGE_LIBRARY_DIRS})
+    
 elseif (LV_USE_WAYLAND)
 
     find_package(PkgConfig REQUIRED)
